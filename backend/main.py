@@ -7,13 +7,13 @@ from typing import List, Optional
 import os
 import uuid
 
-from backend.config import get_settings
-from backend.database.db import get_db, engine
-from backend.database.models import User, FoundItem, LostItem, Base
-from backend.database.repositories import UserRepository, FoundItemRepository, LostItemRepository, MatchingService
-from backend.services.s3 import s3_service
-from backend.services.auth import create_access_token, get_current_user, get_current_admin
-from backend.schemas import (
+from .config import get_settings
+from .database.db import get_db, engine
+from .database.models import User, FoundItem, LostItem, Base
+from .database.repositories import UserRepository, FoundItemRepository, LostItemRepository, MatchingService
+from .services.cloud_storage import cloud_storage_service
+from .services.auth import create_access_token, get_current_user, get_current_admin
+from .schemas import (
     FoundItemCreate, FoundItemUpdate, FoundItemResponse,
     LostItemCreate, LostItemUpdate, LostItemResponse,
     Token, UserResponse, MessageResponse
@@ -125,7 +125,7 @@ async def create_found_item(
     Crée un nouvel objet trouvé avec une image
     """
     # Télécharger l'image sur S3
-    image_url = await s3_service.upload_file(image)
+    image_url = await cloud_storage_service.upload_file(image)
     
     # Extraire le nom du fichier de l'URL
     image_filename = image_url.split("/")[-1]
@@ -201,7 +201,7 @@ async def update_found_item(
     
     # Si une nouvelle image est fournie, la télécharger sur S3
     if image and image.filename:
-        image_url = await s3_service.upload_file(image)
+        image_url = await cloud_storage_service.upload_file(image)
         image_filename = image_url.split("/")[-1]
         update_data["image_url"] = image_url
         update_data["image_filename"] = image_filename

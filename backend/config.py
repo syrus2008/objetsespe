@@ -10,11 +10,10 @@ class Settings(BaseSettings):
     # Configuration de la base de données
     database_url: str = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/lost_found_db")
     
-    # Configuration AWS S3
-    aws_access_key_id: str = os.getenv("AWS_ACCESS_KEY_ID", "")
-    aws_secret_access_key: str = os.getenv("AWS_SECRET_ACCESS_KEY", "")
-    aws_region: str = os.getenv("AWS_REGION", "eu-west-3")
-    s3_bucket_name: str = os.getenv("S3_BUCKET_NAME", "festival-objets-perdus")
+    # Configuration Cloudinary
+    cloudinary_cloud_name: str = os.getenv("CLOUDINARY_CLOUD_NAME", "")
+    cloudinary_api_key: str = os.getenv("CLOUDINARY_API_KEY", "")
+    cloudinary_api_secret: str = os.getenv("CLOUDINARY_API_SECRET", "")
     
     # Secret pour JWT
     secret_key: str = os.getenv("SECRET_KEY", "secret_key_for_development_only")
@@ -23,9 +22,6 @@ class Settings(BaseSettings):
     
     # Mode debug
     debug: bool = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
-    
-    # Préfixe pour les URLs des objets sur S3
-    s3_url_prefix: str = f"https://{os.getenv('S3_BUCKET_NAME', 'festival-objets-perdus')}.s3.{os.getenv('AWS_REGION', 'eu-west-3')}.amazonaws.com/"
     
     class Config:
         env_file = ".env"

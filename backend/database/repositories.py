@@ -4,7 +4,7 @@ from backend.database.models import User, FoundItem, LostItem
 from passlib.context import CryptContext
 import uuid
 from datetime import datetime
-from backend.services.s3 import s3_service
+from ..services.cloud_storage import cloud_storage_service
 
 # Configuration du hachage de mot de passe
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -80,7 +80,7 @@ class FoundItemRepository:
         
         # Si l'URL de l'image change et qu'il y avait une ancienne image, supprimer l'ancienne
         if "image_url" in item_data and item.image_url and item.image_url != item_data["image_url"]:
-            s3_service.delete_file(item.image_url)
+            cloud_storage_service.delete_file(item.image_url)
         
         # Mettre à jour les champs
         for key, value in item_data.items():
@@ -97,7 +97,7 @@ class FoundItemRepository:
         
         # Supprimer l'image de S3 si elle existe
         if item.image_url:
-            s3_service.delete_file(item.image_url)
+            cloud_storage_service.delete_file(item.image_url)
         
         self.db.delete(item)
         self.db.commit()
