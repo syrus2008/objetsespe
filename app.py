@@ -4,7 +4,7 @@ Ce fichier est utilisé par Railway pour démarrer l'application
 """
 import os
 import sys
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
@@ -27,10 +27,22 @@ async def read_root():
     with open("frontend/index.html", "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
 
-# Route pour les autres pages HTML
-@app.get("/admin.html", response_class=HTMLResponse)
-async def read_admin():
-    with open("frontend/admin.html", "r", encoding="utf-8") as f:
+# Route catch-all pour servir index.html pour toutes les routes qui ne correspondent pas aux API
+# Cela permet de gérer les routes côté frontend (SPA)
+@app.get("/{path:path}", response_class=HTMLResponse)
+async def catch_all(path: str):
+    # Ne pas interférer avec les routes API
+    if path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="Not Found")
+    
+    # Vérifier si le chemin demandé est un fichier HTML existant
+    requested_file = f"frontend/{path}"
+    if os.path.exists(requested_file) and os.path.isfile(requested_file):
+        with open(requested_file, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    
+    # Par défaut, renvoyer index.html pour le routing côté client
+    with open("frontend/index.html", "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
 
 # Favicon
