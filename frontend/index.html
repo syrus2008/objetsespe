@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FestivalObjets - Objets Perdus & Trouvés</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-search"></i> FestivalObjets</h1>
+            <p>Plateforme de gestion d'objets perdus et trouvés pour festivals</p>
+            <div class="admin-panel">
+                <button id="adminLoginBtn"><i class="fas fa-user-shield"></i> Administration</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal" id="adminLoginModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Connexion Administrateur</h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+            </form>
+            <div id="loginError" class="error-message"></div>
+        </div>
+    </div>
+
+    <main class="container">
+        <section class="actions">
+            <div class="action-buttons">
+                <button id="showFoundFormBtn" class="btn btn-primary"><i class="fas fa-hand-holding"></i> J'ai trouvé un objet</button>
+                <button id="showLostFormBtn" class="btn btn-secondary"><i class="fas fa-search"></i> J'ai perdu un objet</button>
+            </div>
+        </section>
+
+        <section class="form-section" id="foundItemForm">
+            <h2><i class="fas fa-hand-holding"></i> Déclarer un objet trouvé</h2>
+            <form id="addFoundItemForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="foundDescription">Description de l'objet*:</label>
+                    <input type="text" id="foundDescription" name="description" required placeholder="Ex: Portefeuille noir avec logo rouge">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="foundDate">Date de découverte*:</label>
+                        <input type="date" id="foundDate" name="found_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="foundTime">Heure approximative*:</label>
+                        <input type="time" id="foundTime" name="found_time" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="foundLocation">Lieu de découverte*:</label>
+                    <input type="text" id="foundLocation" name="location" required placeholder="Ex: Près de la scène principale">
+                </div>
+                <div class="form-group">
+                    <label for="foundContentInfo">Informations sur le contenu:</label>
+                    <textarea id="foundContentInfo" name="content_info" rows="3" placeholder="Informations qui pourraient aider à identifier le propriétaire"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="foundImage">Photo de l'objet*:</label>
+                    <input type="file" id="foundImage" name="image" accept="image/*" required>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Soumettre</button>
+            </form>
+        </section>
+
+        <section class="form-section" id="lostItemForm">
+            <h2><i class="fas fa-search"></i> Déclarer un objet perdu</h2>
+            <form id="addLostItemForm">
+                <div class="form-group">
+                    <label for="lostDescription">Description de l'objet*:</label>
+                    <input type="text" id="lostDescription" name="description" required placeholder="Ex: Portefeuille noir avec logo rouge">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="lostDate">Date de perte*:</label>
+                        <input type="date" id="lostDate" name="lost_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lostTime">Heure approximative*:</label>
+                        <input type="time" id="lostTime" name="lost_time" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lostLocation">Lieu de perte*:</label>
+                    <input type="text" id="lostLocation" name="location" required placeholder="Ex: Près de la scène principale">
+                </div>
+                <div class="form-group">
+                    <label for="lostContentInfo">Informations complémentaires:</label>
+                    <textarea id="lostContentInfo" name="content_info" rows="3" placeholder="Détails qui pourraient aider à identifier l'objet"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Soumettre</button>
+            </form>
+        </section>
+
+        <section class="filter-section">
+            <h2>Liste des objets</h2>
+            <div class="filters">
+                <div class="filter-type">
+                    <label>Type d'objets:</label>
+                    <div class="filter-buttons">
+                        <button id="filterAll" class="filter-btn active" data-filter="all">Tous</button>
+                        <button id="filterFound" class="filter-btn" data-filter="found">Trouvés</button>
+                        <button id="filterLost" class="filter-btn" data-filter="lost">Perdus</button>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Rechercher...">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="date-filter">
+                    <label for="dateFilter">Filtrer par date:</label>
+                    <input type="date" id="dateFilter">
+                </div>
+            </div>
+        </section>
+
+        <section class="items-list">
+            <div class="items-container" id="itemsContainer">
+                <!-- Les objets seront insérés ici dynamiquement -->
+                <div class="loading">Chargement des objets...</div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="itemDetailsModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="itemDetails">
+                <!-- Les détails de l'objet seront insérés ici -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editItemModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Modifier l'objet</h2>
+            <form id="editItemForm" enctype="multipart/form-data">
+                <input type="hidden" id="editItemId" name="id">
+                <input type="hidden" id="editItemType" name="type">
+                
+                <div class="form-group">
+                    <label for="editDescription">Description*:</label>
+                    <input type="text" id="editDescription" name="description" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editDate">Date*:</label>
+                        <input type="date" id="editDate" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTime">Heure*:</label>
+                        <input type="time" id="editTime" name="time" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editLocation">Lieu*:</label>
+                    <input type="text" id="editLocation" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="editContentInfo">Informations complémentaires:</label>
+                    <textarea id="editContentInfo" name="content_info" rows="3"></textarea>
+                </div>
+                <div class="form-group" id="editImageGroup">
+                    <label for="editImage">Photo (laisser vide pour conserver l'actuelle):</label>
+                    <input type="file" id="editImage" name="image" accept="image/*">
+                    <div id="editImagePreview" class="image-preview"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <div class="toast-message"></div>
+        </div>
+        <div class="toast-progress"></div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 FestivalObjets - Plateforme pour objets perdus et trouvés</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
