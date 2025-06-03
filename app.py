@@ -16,10 +16,8 @@ from backend.main import app as backend_app
 app = backend_app
 
 # Monter les fichiers statiques du frontend
-app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 app.mount("/css", StaticFiles(directory="frontend/css"), name="css")
 app.mount("/js", StaticFiles(directory="frontend/js"), name="js")
-app.mount("/images", StaticFiles(directory="frontend/images"), name="images")
 
 # Route racine qui sert index.html
 @app.get("/", response_class=HTMLResponse)
